@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Comprobante de Retención ISLR</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .section { margin-bottom: 20px; }
+        .section h3 { border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        .footer { text-align: center; margin-top: 50px; font-size: 0.8em; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Comprobante de Retención de Impuesto Sobre la Renta (ISLR)</h1>
+        <p>Fecha: {{fecha}}</p>
+    </div>
+
+    <div class="section">
+        <h3>Datos del Agente de Retención</h3>
+        <p><strong>RIF:</strong> {{agente_rif}}</p>
+        <p><strong>Razón Social:</strong> {{agente_razon_social}}</p>
+        <p><strong>Dirección:</strong> {{agente_direccion}}</p>
+    </div>
+
+    <div class="section">
+        <h3>Datos del Sujeto Retenido</h3>
+        <p><strong>RIF:</strong> {{islr_rif}}</p>
+        <p><strong>Razón Social:</strong> {{sujeto_razon_social}}</p>
+    </div>
+
+    <div class="section">
+        <h3>Detalle de la Retención</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nro. Factura</th>
+                    <th>Nro. Control</th>
+                    <th>Fecha Factura</th>
+                    <th>Monto Factura</th>
+                    <th>Monto Retenido</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{islr_nrofac}}</td>
+                    <td>{{islr_nroctrl}}</td>
+                    <td>{{islr_fechafac}}</td>
+                    <td>{{islr_monto}}</td>
+                    <td>{{islr_monto_retenido}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p><strong>Nro. Comprobante de Retención:</strong> {{islr_nroret}}</p>
+    </div>
+
+    <div class="footer">
+        <p>Este comprobante es válido sin firma ni sello según la normativa vigente.</p>
+    </div>
+</body>
+</html>

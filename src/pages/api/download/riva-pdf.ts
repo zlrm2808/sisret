@@ -49,7 +49,7 @@ export const GET: APIRoute = async ({ cookies, request }) => {
       sujeto_razon_social: 'Sujeto Retenido S.A.',
     };
 
-    const templatePath = path.resolve(__dirname, '../../templates/riva-template.html');
+    const templatePath = path.resolve(__dirname, '../../../templates/riva-template.html');
     const templateHtml = readFileSync(templatePath, 'utf8');
     const template = handlebars.compile(templateHtml);
 

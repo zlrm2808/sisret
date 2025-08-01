@@ -9,14 +9,13 @@ import path from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const GET: APIRoute = async ({ cookies, request }) => {
+export const GET: APIRoute = async ({ cookies, url }) => {
   const session = cookies.get('session');
 
   if (!session) {
     return new Response(JSON.stringify({ message: 'Unauthorized' }), { status: 401 });
   }
 
-  const url = new URL(request.url);
   const islr_rif = url.searchParams.get('islr_rif');
   const islr_nrofac = url.searchParams.get('islr_nrofac');
   const islr_nroret = url.searchParams.get('islr_nroret');
@@ -27,7 +26,7 @@ export const GET: APIRoute = async ({ cookies, request }) => {
 
   try {
     const [rows] = await db.execute(
-      'SELECT islr_rif, islr_nrofac, islr_nroret, islr_nroctr, islr_fecemi, islr_bimp, islr_impret FROM dp_islr WHERE islr_rif = ? AND islr_nrofac = ? AND islr_nroret = ?',
+      'SELECT islr_rif, islr_nrofac, islr_nroret, islr_nroctr, islr_fecemi, islr_bimp, islr_impret, islr_nombre FROM dp_islr WHERE islr_rif = ? AND islr_nrofac = ? AND islr_nroret = ?',
       [islr_rif, islr_nrofac, islr_nroret]
     );
     const islrData = rows as any[];
@@ -49,22 +48,24 @@ export const GET: APIRoute = async ({ cookies, request }) => {
       sujeto_razon_social: 'Sujeto Retenido S.A.',
     };
 
-    const templatePath = path.resolve(__dirname, '../../templates/islr-template.html');
+    const templatePath = path.resolve(__dirname, '../../../templates/islr-template.html');
     const templateHtml = readFileSync(templatePath, 'utf8');
     const template = handlebars.compile(templateHtml);
 
     const html = template({
       ...data,
       ...agentData,
-      ...subjectData,
+      sujeto_razon_social: data.islr_nombre,
       fecha: new Date().toLocaleDateString('es-VE'),
       islr_fechafac: new Date(data.islr_fecemi).toLocaleDateString('es-VE'),
       islr_monto: data.islr_bimp, // Monto Factura
       islr_monto_retenido: data.islr_impret, // Monto Retenido
     });
 
+    console.log(html);
+
     return new Promise((resolve, reject) => {
-      htmlPdf.create(html).toBuffer((err, buffer) => {
+      htmlPdf.create(html, { base: `file://${templatePath}` }).toBuffer((err, buffer) => {
         if (err) {
           console.error(err);
           return reject(new Response(JSON.stringify({ message: 'Error generating PDF' }), { status: 500 }));

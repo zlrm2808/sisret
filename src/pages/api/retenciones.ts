@@ -3,9 +3,7 @@ import { db } from '@/services/db';
 
 export const GET: APIRoute = async ({ cookies, url }) => {
   const session = cookies.get('session');
-  // userRif and userId are no longer needed for filtering all retentions
-  // const userRif = cookies.get('user_rif')?.value;
-  // const userId = parseInt(cookies.get('user_id')?.value || '0');
+  const userRif = cookies.get('user_rif')?.value;
 
   if (!session) {
     return new Response(JSON.stringify({ message: 'Unauthorized' }), { status: 401 });
@@ -25,6 +23,8 @@ export const GET: APIRoute = async ({ cookies, url }) => {
     let rivaData: any[] = [];
     let islrTotal = 0;
     let rivaTotal = 0;
+
+    const cleanedUserRif = userRif ? userRif.replace(/-/g, '') : '';
 
     // Determine actual column names for sorting
     const islrSortColumnMap: Record<string, string> = {
@@ -50,10 +50,15 @@ export const GET: APIRoute = async ({ cookies, url }) => {
     const actualIslrSortColumn = islrSortColumnMap[sortColumn] || 'islr_fecemi';
     const actualRivaSortColumn = rivaSortColumnMap[sortColumn] || 'riva_fecdoc';
 
-    // Function to build WHERE clause and params for a given table (without userRif filter)
-    const buildWhereClause = (fields: string[], prefix: string, term: string) => {
+    // Function to build WHERE clause and params for a given table
+    const buildWhereClause = (fields: string[], prefix: string, term: string, rif: string) => {
       let clauses: string[] = [];
       let params: any[] = [];
+
+      if (rif) {
+        clauses.push(`REPLACE(${prefix}rif, '-', '') = ?`);
+        params.push(rif);
+      }
 
       if (term) {
         const searchPattern = `%${term}%`;
@@ -66,7 +71,7 @@ export const GET: APIRoute = async ({ cookies, url }) => {
     // ISLR Query
     if (typeFilter === 'ISLR' || typeFilter === 'all') {
       const islrSearchFields = ['rif', 'nrofac', 'nroret', 'nombre', 'direcc'];
-      const { clauses, params } = buildWhereClause(islrSearchFields, 'islr_', searchTerm);
+      const { clauses, params } = buildWhereClause(islrSearchFields, 'islr_', searchTerm, cleanedUserRif);
 
       let islrQuery = `SELECT islr_rif, islr_nrofac, islr_nroret, islr_nroctr, islr_fecemi, islr_bimp, islr_impret, islr_nombre, islr_direcc FROM dp_islr`;
       let islrCountQuery = `SELECT COUNT(*) as count FROM dp_islr`;
@@ -88,7 +93,7 @@ export const GET: APIRoute = async ({ cookies, url }) => {
     // RIVA Query
     if (typeFilter === 'IVA' || typeFilter === 'all') {
       const rivaSearchFields = ['rif', 'nrocom', 'nrofac', 'nombre', 'direcc'];
-      const { clauses, params } = buildWhereClause(rivaSearchFields, 'riva_', searchTerm);
+      const { clauses, params } = buildWhereClause(rivaSearchFields, 'riva_', searchTerm, cleanedUserRif);
 
       let rivaQuery = `SELECT riva_rif, riva_nrocom, riva_nrofac, riva_nroctr, riva_fecdoc, riva_bimp, riva_iiva, riva_iret, riva_nombre, riva_direcc FROM dp_riva`;
       let rivaCountQuery = `SELECT COUNT(*) as count FROM dp_riva`;

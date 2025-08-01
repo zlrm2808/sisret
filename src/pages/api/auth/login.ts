@@ -43,6 +43,20 @@ export const POST: APIRoute = async ({ request, cookies }) => {
       path: '/',
     });
 
+    cookies.set('user_id', user.id, {
+      httpOnly: true,
+      secure: import.meta.env.PROD,
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: '/',
+    });
+
+    cookies.set('user_username', user.username, {
+      httpOnly: true,
+      secure: import.meta.env.PROD,
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+      path: '/',
+    });
+
     cookies.set('user_rif', user.rif, {
       httpOnly: true,
       secure: import.meta.env.PROD,

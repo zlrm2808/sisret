@@ -2,12 +2,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('DOM Content Loaded.');
 
   let allRetenciones:any = [];
-  let filteredRetenciones = [];
   let currentSortColumn:any = null;
-  let currentSortDirection = 'desc'; // Default to descending for most recent first
+  let currentSortDirection = 'desc';
   let currentPage = 1;
-  let itemsPerPage = 15; // Initial value, will be adjusted dynamically
-  let totalRecords = 0; // Declare totalRecords here
+  let itemsPerPage = 15;
+  let totalRecords = 0;
 
   const dashboardCard = document.getElementById('dashboard-card');
   const searchFilterControls = document.getElementById('search-filter-controls');
@@ -25,7 +24,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const nextPageBtn = document.getElementById('next-page');
   const pageInfoSpan = document.getElementById('page-info');
 
-  // Function to fetch data from the server
   async function fetchData() {
     const params = new URLSearchParams();
     params.append('page', currentPage.toString());
@@ -45,10 +43,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       const response = await fetch(`/api/retenciones?${params.toString()}`);
       if (response.ok) {
         const result = await response.json();
-        allRetenciones = result.data; // Data for the current page
-        totalRecords = result.total; // Update totalRecords
+        allRetenciones = result.data;
+        totalRecords = result.total;
         console.log('Fetched data:', allRetenciones.length, 'items. Total records:', totalRecords);
-        renderTable(); // Call renderTable without passing totalRecords as it's now global
+        renderTable();
       } else {
         console.error('Failed to fetch retenciones:', await response.text());
       }
@@ -63,7 +61,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    // Get computed styles for accurate measurements
     const dashboardCardStyle = window.getComputedStyle(dashboardCard);
     const cardPaddingY = parseFloat(dashboardCardStyle.paddingTop) + parseFloat(dashboardCardStyle.paddingBottom);
     const cardMarginBottom = parseFloat(dashboardCardStyle.marginBottom);
@@ -72,7 +69,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tableHeaderHeight = tableHeader.offsetHeight;
     const paginationHeight = paginationControls.offsetHeight;
 
-    // Calculate available height for the entire dashboard card content area
     const mainContentArea = document.querySelector('main.flex-1.overflow-x-hidden.overflow-y-auto.bg-gray-100.p-6');
     if (!mainContentArea) {
       console.error('Main content area not found.');
@@ -81,36 +77,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     const mainPaddingY = parseFloat(window.getComputedStyle(mainContentArea).paddingTop) + parseFloat(window.getComputedStyle(mainContentArea).paddingBottom);
     const mainAvailableHeight = mainContentArea.clientHeight - mainPaddingY;
 
-    // Calculate available height for the table body within the dashboard card
     const availableHeightForTableBody = mainAvailableHeight - searchFilterHeight - tableHeaderHeight - paginationHeight - cardPaddingY - cardMarginBottom - 20; // 20px for extra buffer
 
-    // Estimate row height dynamically by creating a dummy row
     let estimatedRowHeight = 0;
     if (tableBody && tableBody.children.length > 0) {
       estimatedRowHeight = tableBody.offsetHeight;
     } else {
-      // If no rows, create a dummy row to measure
       const dummyRow = document.createElement('tr');
       dummyRow.innerHTML = `<td class="px-6 py-2 whitespace-nowrap text-sm font-medium text-gray-900">Dummy</td>`;
-      dummyRow.style.visibility = 'hidden'; // Hide it
+      dummyRow.style.visibility = 'hidden';
       tableBody?.appendChild(dummyRow);
       estimatedRowHeight = dummyRow.offsetHeight;
       tableBody?.removeChild(dummyRow);
     }
 
     if (estimatedRowHeight === 0) {
-      estimatedRowHeight = 36; // Fallback if dynamic measurement fails
+      estimatedRowHeight = 36;
     }
 
-    // Calculate dynamic itemsPerPage
     const newItemsPerPage = Math.max(1, Math.floor(availableHeightForTableBody / estimatedRowHeight));
     if (newItemsPerPage !== itemsPerPage) {
       itemsPerPage = newItemsPerPage;
-      currentPage = 1; // Reset page when itemsPerPage changes
+      currentPage = 1; 
       console.log('Adjusted itemsPerPage to:', itemsPerPage);
     }
 
-    // Set max-height for the scrollable table container
     tableScrollContainer.style.maxHeight = `${availableHeightForTableBody}px`;
     tableScrollContainer.style.overflowY = 'auto';
 
@@ -129,7 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('Calculated itemsPerPage:', itemsPerPage);
     console.log('-------------------------------');
 
-    fetchData(); // Fetch data with new itemsPerPage
+    fetchData();
   }
 
   function renderTable() {
@@ -165,7 +156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-csv"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 16h.01"/><path d="M12 16h.01"/><path d="M16 16h.01"/><path d="M8 20h.01"/><path d="M12 20h.01"/><path d="M16 20h.01"/></svg>
             CSV
           </a>
-          <a href="/api/download/${item.type.toLowerCase()}-pdf?${item.type === 'ISLR' ? `islr_rif=${item.original_islr_rif}&islr_nrofac=${item.original_islr_nrofac}&islr_nroret=${item.original_islr_nroret}` : `riva_rif=${item.original_riva_rif}&riva_nrocom=${item.original_riva_nrocom}&riva_nrofac=${item.original_riva_nrofac}`}" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <a href="/api/download/${item.type === 'IVA' ? 'riva' : item.type.toLowerCase()}-pdf?${item.type === 'ISLR' ? `islr_rif=${item.original_islr_rif}&islr_nrofac=${item.original_islr_nrofac}&islr_nroret=${item.original_islr_nroret}` : `riva_rif=${item.original_riva_rif}&riva_nrocom=${item.original_riva_nrocom}&riva_nrofac=${item.original_riva_nrofac}`}" class="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L15 2z"/><polyline points="14 2 14 8 20 8"/><path d="M10 12H8"/><path d="M16 12h-2"/><path d="M16 16H8"/></svg>
             PDF
           </a>
@@ -258,7 +249,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // Initial render and resize listener
   adjustTableLayout();
   window.addEventListener('resize', adjustTableLayout);
 });

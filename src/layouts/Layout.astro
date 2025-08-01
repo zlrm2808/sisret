@@ -7,6 +7,8 @@ interface Props {
 }
 
 const { title } = Astro.props;
+const username = Astro.cookies.get('user_username')?.value;
+const userInitial = username ? username.charAt(0).toUpperCase() : '';
 ---
 
 <!doctype html>
@@ -50,8 +52,10 @@ const { title } = Astro.props;
 				<div class="text-xl font-semibold text-gray-800">{title}</div>
 				<!-- User/Profile Placeholder -->
 				<div class="flex items-center space-x-4">
-					<span class="text-gray-700">Usuario Actual</span>
-					<!-- You can add a user avatar or dropdown here -->
+					<div class="size-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold text-2xl">
+						{userInitial}
+					</div>
+					<span class="text-gray-700">{username}</span>
 				</div>
 			</header>
 

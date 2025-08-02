@@ -1,13 +1,15 @@
 ---
-import Layout from '@/layouts/Layout.astro';
+import AuthLayout from '@/layouts/AuthLayout.astro';
+import Logo from '@/assets/Logo.webp';
 ---
 
-<Layout title="Register">
+<AuthLayout title="Register">
   <main class="flex items-center justify-center min-h-screen bg-gray-100">
     <div class="w-full max-w-sm p-8 space-y-6 bg-white rounded-xl shadow-lg">
+      <img src={Logo.src} alt="">
       <div class="text-center">
-        <h1 class="text-3xl font-extrabold text-gray-900">Crea tu cuenta</h1>
-        <p class="mt-2 text-sm text-gray-600">Regístrate para empezar</p>
+        <h1 class="text-xl font-semibold text-gray-900">Sistema de Retenciones</h1>
+        <p class="mt-2 text-sm text-gray-400">Regístrate para consultar tus retenciones</p>
       </div>
       <form class="space-y-6" method="POST" action="/api/auth/register">
         <div>
@@ -70,4 +72,4 @@ import Layout from '@/layouts/Layout.astro';
       </div>
     </div>
   </main>
-</Layout>
+</AuthLayout>

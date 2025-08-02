@@ -1,6 +1,7 @@
 ---
 import '@/styles/global.css';
 import { Home, FileText, LogOut } from '@lucide/astro';
+import Logo from '@/assets/Logo.webp';
 
 interface Props {
 	title: string;
@@ -25,17 +26,14 @@ const userInitial = username ? username.charAt(0).toUpperCase() : '';
 		<!-- Sidebar -->
 		<aside class="w-64 bg-gray-800 text-white flex flex-col">
 			<div class="p-4 text-2xl font-bold border-b border-gray-700">
-				SisRet
+				<img src={Logo.src} alt="">
 			</div>
 			<nav class="flex-1 p-4 space-y-2">
 				<a href="/dashboard" class="flex items-center px-4 py-2 rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition duration-150 ease-in-out">
 					<Home class="w-5 h-5 mr-3" />
 					Dashboard
 				</a>
-				<a href="#" class="flex items-center px-4 py-2 rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition duration-150 ease-in-out">
-					<FileText class="w-5 h-5 mr-3" />
-					Reportes
-				</a>
+				
 			</nav>
 			<div class="p-4 border-t border-gray-700">
 				<a href="/api/auth/logout" class="flex items-center px-4 py-2 rounded-md text-gray-300 hover:bg-gray-700 hover:text-white transition duration-150 ease-in-out">

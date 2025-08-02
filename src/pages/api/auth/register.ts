@@ -33,7 +33,12 @@ export const POST: APIRoute = async ({ request }) => {
       [username, rif, hashedPassword]
     );
 
-    return new Response(JSON.stringify({ message: 'User created successfully' }));
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': '/login',
+      },
+    });
 
   } catch (error) {
     console.error(error);
